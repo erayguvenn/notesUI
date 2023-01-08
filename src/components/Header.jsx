@@ -5,7 +5,7 @@ function Header() {
   const user = useAuthStore((state) => state.user);
   return (
     <div className="text-black flex justify-between items-center">
-      <span className="font-bold text-xl ">Not defterim</span>
+      <span className="font-bold text-2xl ">Not defterim</span>
       <div className="flex items-center gap-4">
         <p>
           {user.name} {user.surname}
