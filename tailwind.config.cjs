@@ -7,12 +7,13 @@ module.exports = {
   theme: {
     extend: {
       colors:{
-        primary:"#41ff41"
+        primary:"#41ff41",
+        darkBlack:"#0E0E10"
       },
       fontFamily:{
         inter:"Inter"
       }
     },
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar')],
 }

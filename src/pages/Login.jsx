@@ -32,7 +32,7 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center">
+    <div className="flex-1 flex items-center justify-center text-black">
       <div className="shadow-md p-8 w-full max-w-sm bg-white rounded">
         <p className="text-center text-2xl">Giriş yap</p>
 

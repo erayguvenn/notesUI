@@ -10,6 +10,8 @@ import OnlyGuestRoute from "./components/OnlyGuestRoute";
 import HomePage from "./pages/Home";
 import { GetUser } from "./services/user";
 
+import bgImage from "./assets/bg.jpg";
+
 function App() {
   const authStore = useAuthStore();
 
@@ -35,8 +37,12 @@ function App() {
     getInıtialAuth();
   }, []);
   return (
-    <div className="bg-slate-100 font-inter">
-      <div className="w-full max-w-3xl mx-auto py-4 min-h-screen flex">
+    <div className="font-inter h-screen relative overflow-hidden text-white flex">
+      <img
+        src={bgImage}
+        className="absolute top-0 left-0 w-full h-full blur-sm object-cover object-center scale-105"
+      />
+      <div className="w-full mx-auto flex-1 flex relative">
         <BrowserRouter>
           <Routes>
             <Route
