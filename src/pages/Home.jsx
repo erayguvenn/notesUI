@@ -23,8 +23,6 @@ function HomePage() {
     async function getNotes() {
       try {
         const notes = await GetAllNotes(token);
-        notes[0].body =
-          "AHAH  HAH AH A A AHA AH AHAHAHAHA HA AH AH AH A AHAH AHA HAH AH A A AHA AH AHAHAHAHA HA AH AH AH A AHAH AHA HAH AH A A AHA AH AHAHAHAHA HA AH AH AH A";
         setNotes([...notes]);
       } catch (err) {
         console.error(err);
@@ -33,8 +31,6 @@ function HomePage() {
 
     getNotes();
   }, []);
-
-  const dummy = [{}, {}, {}, {}];
 
   const onClickDelete = async (e, noteId) => {
     e.stopPropagation();
@@ -45,13 +41,17 @@ function HomePage() {
     } catch (err) {}
   };
 
+  const onCloseCreateNote = () => {
+    setIsCreatingNote(false);
+    setCreateNoteTitle("");
+    setCreateNoteBody("");
+  };
+
   const onCreateNote = () => {
     let title = createNoteTitle;
     const body = createNoteBody;
 
     if (title.trim() == "") title = "Başlıksız";
-
-    console.log("Şu bilgilerle not oluşturuluyor", title, body);
 
     let temporaryId = uuidv4();
 
@@ -148,7 +148,7 @@ function HomePage() {
                           }
                           className="mx-2 shrink-0"
                         >
-                          <RiDeleteBin5Line className="w-4" />
+                          <RiDeleteBin5Line className="w-4 " />
                         </button>
                       </div>
                       <p className="text-white/75 text-sm mt-2 ">{note.body}</p>
@@ -173,7 +173,7 @@ function HomePage() {
           >
             <motion.div
               layoutId={selectedNote.temporaryId || selectedNote.id}
-              className={`bg-darkBlack p-4 rounded-lg overflow-hidden cursor-pointer w-96 h-96`}
+              className={`bg-darkBlack p-4 rounded-lg overflow-hidden cursor-pointer w-96 h-96 flex flex-col`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="title flex justify-between items-center">
@@ -189,7 +189,12 @@ function HomePage() {
                   <RiDeleteBin5Line className="w-4" />
                 </button>
               </div>
-              <p className="text-white/75 text-sm mt-2 ">{selectedNote.body}</p>
+              <p
+                className="text-white/75 text-sm mt-2 flex-1 overflow-auto
+            "
+              >
+                {selectedNote.body}
+              </p>
             </motion.div>
           </motion.div>
         )}
@@ -200,12 +205,12 @@ function HomePage() {
             animate={{ backgroundColor: "#000000aa" }}
             exit={{ backgroundColor: "#00000000" }}
             className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center"
-            onClick={(e) => (onCreateNote(), setIsCreatingNote(false))}
+            onClick={(e) => onCloseCreateNote()}
           >
             <form onSubmit={(e) => (e.preventDefault(), onCreateNote())}>
               <motion.div
                 layoutId="createNote"
-                className={`bg-darkBlack p-4 rounded-lg overflow-hidden cursor-pointer w-96 h-96 flex flex-col`}
+                className={`bg-darkBlack p-4 rounded-lg overflow-hidden w-96 h-96 flex flex-col`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex">
@@ -217,13 +222,21 @@ function HomePage() {
                     className="bg-transparent outline-none flex-1 focus:bg-white/10 p-2 transition rounded"
                   />
                 </div>
-                <textarea
-                  type="text"
-                  value={createNoteBody}
-                  onChange={(e) => setCreateNoteBody(e.target.value)}
-                  placeholder="İçerik..."
-                  className="bg-transparent outline-none flex-1 mt-2 p-2 rounded focus:bg-white/10 transition text-start"
-                />
+                <div className="h-full flex scrollbar-thin scrollbar-track-slate-600 mt-2">
+                  <textarea
+                    type="text"
+                    value={createNoteBody}
+                    onChange={(e) => setCreateNoteBody(e.target.value)}
+                    placeholder="İçerik..."
+                    className="bg-transparent flex-1 outline-none rounded focus:bg-white/10 transition text-start resize-none scrollbar-thin scrollbar-track-slate-500 p-2"
+                  />
+                </div>
+
+                <div className="flex items-center justify-center">
+                  <button className="bg-green-800 text-white px-4 py-2 rounded-lg mt-4 w-1/2">
+                    Oluştur{" "}
+                  </button>
+                </div>
               </motion.div>
             </form>
           </motion.div>
