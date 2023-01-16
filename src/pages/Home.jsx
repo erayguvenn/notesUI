@@ -8,21 +8,43 @@ import {
   RiSearchLine,
   RiDeleteBin5Line,
   RiAddCircleFill,
+  RiEdit2Fill,
 } from "react-icons/ri";
 import produce from "immer";
+import NoteView from "../components/NoteView";
+
+function zeroPad(str) {
+  return String(str).length < 2 ? "0" + str : String(str);
+}
+
+function parseDate(dateStr) {
+  const date = new Date(dateStr);
+
+  const days = zeroPad(date.getDate());
+  const months = zeroPad(date.getMonth() + 1);
+  const years = zeroPad(date.getFullYear());
+
+  const minutes = zeroPad(date.getMinutes());
+  const hours = zeroPad(date.getHours());
+
+  return `${days}/${months}/${years} ${hours}:${minutes}`;
+}
 
 function HomePage() {
   const token = useAuthStore((state) => state.token);
+
   const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState(null);
   const [isCreatingNote, setIsCreatingNote] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [createNoteBody, setCreateNoteBody] = useState("");
   const [createNoteTitle, setCreateNoteTitle] = useState("");
+
   useEffect(() => {
     async function getNotes() {
       try {
-        const notes = await GetAllNotes(token);
+        const notes = await GetAllNotes(token, searchQuery);
         setNotes([...notes]);
       } catch (err) {
         console.error(err);
@@ -30,7 +52,7 @@ function HomePage() {
     }
 
     getNotes();
-  }, []);
+  }, [searchQuery]);
 
   const onClickDelete = async (e, noteId) => {
     e.stopPropagation();
@@ -97,6 +119,8 @@ function HomePage() {
           <input
             type="text"
             placeholder="Ara"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="bg-darkBlack w-full px-6 py-3 rounded-lg outline-none pl-12 text-white"
           />
         </div>
@@ -106,7 +130,7 @@ function HomePage() {
           <div className="h-full flex flex-col overflow-auto scrollbar-none pb-32">
             <div className="grid grid-cols-3 gap-8 auto-rows-[9rem] mt-4 flex-1">
               <AnimatePresence mode="popLayout">
-                {!isCreatingNote && (
+                {!isCreatingNote && searchQuery.trim().length == 0 && (
                   <motion.div
                     animate={{
                       opacity: 0.25,
@@ -126,16 +150,14 @@ function HomePage() {
                   <motion.div
                     key={note.temporaryId || note.id}
                     layoutId={note.temporaryId || note.id}
-                    className={`bg-darkBlack p-4 rounded-lg overflow-hidden cursor-pointer relative group
+                    className={`bg-darkBlack p-4 rounded-lg overflow-hidden cursor-pointer group
                     ${note.isCreating && "animate-pulse"}`}
-                    exit={{
-                      scale: 0.1,
-                    }}
+                    exit={{ scale: 0 }}
                     onClick={(e) =>
                       note.isCreating ? null : setSelectedNote(note)
                     }
                   >
-                    <div>
+                    <div className="h-full flex flex-col">
                       <div className="title flex justify-between items-center">
                         <div className="relative flex-1 overflow-hidden">
                           <p className="whitespace-nowrap overflow-ellipsis overflow-hidden">
@@ -151,8 +173,12 @@ function HomePage() {
                           <RiDeleteBin5Line className="w-4 " />
                         </button>
                       </div>
-                      <p className="text-white/75 text-sm mt-2 ">{note.body}</p>
-                      <p className="text-green-500">{note.date}</p>
+                      <p className="text-white/75 text-sm mt-2 flex-1 overflow-hidden">
+                        {note.body}
+                      </p>
+                      <p className="text-green-500 text-xs bottom-2">
+                        {parseDate(note.createdAt)}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
@@ -169,33 +195,32 @@ function HomePage() {
             animate={{ backgroundColor: "#000000aa" }}
             exit={{ backgroundColor: "#00000000" }}
             className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center"
-            onClick={(e) => setSelectedNote(null)}
+            onClick={(e) =>
+              e.target == e.currentTarget && setSelectedNote(null)
+            }
           >
-            <motion.div
-              layoutId={selectedNote.temporaryId || selectedNote.id}
-              className={`bg-darkBlack p-4 rounded-lg overflow-hidden cursor-pointer w-96 h-96 flex flex-col`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="title flex justify-between items-center">
-                <div className="relative flex-1 overflow-hidden">
-                  <p className="whitespace-nowrap overflow-ellipsis overflow-hidden">
-                    {selectedNote.title}
-                  </p>
-                </div>
-                <button
-                  onClick={(e) => onClickDelete(e, selectedNote.id)}
-                  className="mx-2 shrink-0"
-                >
-                  <RiDeleteBin5Line className="w-4" />
-                </button>
-              </div>
-              <p
-                className="text-white/75 text-sm mt-2 flex-1 overflow-auto
-            "
-              >
-                {selectedNote.body}
-              </p>
-            </motion.div>
+            <NoteView
+              noteId={selectedNote.temporaryId || selectedNote.id}
+              noteTitle={selectedNote.title}
+              noteBody={selectedNote.body}
+              editable
+              onUpdate={(title, body) => {
+                setSelectedNote(null);
+                setNotes(
+                  produce((oldNotes) => {
+                    let noteToUpdate = oldNotes.find(
+                      (note) => note.id == selectedNote.id
+                    );
+                    if (noteToUpdate) {
+                      noteToUpdate.title = title;
+                      noteToUpdate.body = body;
+                    }
+
+                    return oldNotes;
+                  })
+                );
+              }}
+            />
           </motion.div>
         )}
 
