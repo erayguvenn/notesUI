@@ -5,7 +5,14 @@ import { UpdateNote } from "../services/note";
 import { toast } from "react-hot-toast";
 import useAuthStore from "../store/auth";
 
-function NoteView({ noteTitle, noteBody, noteId, editable, onUpdate }) {
+function NoteView({
+  noteTitle,
+  noteBody,
+  noteId,
+  layoutId,
+  editable,
+  onUpdate,
+}) {
   const [title, setTitle] = useState(noteTitle || "");
   const [body, setBody] = useState(noteBody || "");
   const [isEditing, setIsEditing] = useState(false);
@@ -57,7 +64,7 @@ function NoteView({ noteTitle, noteBody, noteId, editable, onUpdate }) {
 
   return (
     <motion.div
-      layoutId={noteId}
+      layoutId={layoutId}
       className={`bg-darkBlack p-4 rounded-lg overflow-hidden cursor-pointer w-96 h-96 flex flex-col`}
     >
       <div className="title flex justify-between items-center">

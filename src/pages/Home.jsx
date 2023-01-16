@@ -200,7 +200,8 @@ function HomePage() {
             }
           >
             <NoteView
-              noteId={selectedNote.temporaryId || selectedNote.id}
+              layoutId={selectedNote.temporaryId || selectedNote.id}
+              noteId={selectedNote.id}
               noteTitle={selectedNote.title}
               noteBody={selectedNote.body}
               editable
