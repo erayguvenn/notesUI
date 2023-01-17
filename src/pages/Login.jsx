@@ -11,24 +11,38 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // Form submit edildiğinde login servisini çağırıyoruz.
+  // Eğer login başarılı olursa kullanıcıyı anasayfaya yönlendiriyoruz.
+  // Eğer login başarısız olursa hata mesajını konsola yazdırıyoruz.
   async function onSubmit(e) {
     e.preventDefault();
-    try {
-      const response = await Login(email, password);
 
-      const user = await GetUser(response.token);
+    // Login işlemi sırasında kullanıcıya bir loading mesajı gösteriyoruz.
+    // Login işlemi başarılı olursa kullanıcıya bir success mesajı gösteriyoruz.
+    // Login işlemi başarısız olursa kullanıcıya bir error mesajı gösteriyoruz.
+    toast.promise(
+      new Promise(async (res, rej) => {
+        try {
+          const response = await Login(email, password);
+          const user = await GetUser(response.token);
 
-      authStore.setLoggedIn(true);
-      authStore.setToken(response.token);
-      authStore.setUser(user);
-      localStorage.setItem("token", response.token);
-      toast.success("Başarıyla giriş yaptın");
+          authStore.setLoggedIn(true);
+          authStore.setToken(response.token);
+          authStore.setUser(user);
+          localStorage.setItem("token", response.token);
 
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-      toast.error("Giriş yaparken bir hata oluştu. " + err.message);
-    }
+          navigate("/");
+          res();
+        } catch (err) {
+          rej(err.message);
+        }
+      }),
+      {
+        loading: "Giriş yapılıyor...",
+        success: "Başarıyla giriş yaptın",
+        error: (e) => "Giriş yaparken bir hata oluştu. " + e,
+      }
+    );
   }
 
   return (

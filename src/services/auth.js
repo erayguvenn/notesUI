@@ -1,3 +1,4 @@
+// Eposta ve şşifreyi alıp giriş yapan fonksiyonu yazıyoruz.
 export async function Login(email, password) {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
     method: "POST",
@@ -17,6 +18,7 @@ export async function Login(email, password) {
   return json;
 }
 
+// Ad, soyad, eposta ve şifreyi alıp kullanıcıyı kayıt eden oluşturan fonksiyonu yazıyoruz.
 export async function Register(name, surname, email, password) {
   const response = await fetch(
     `${import.meta.env.VITE_API_URL}/auth/register`,

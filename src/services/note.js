@@ -1,3 +1,4 @@
+// Tokeni ve aranılacak kelimeyi alıp notları çeken fonksiyonu yazıyoruz.
 export async function GetAllNotes(token, searchQuery) {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/note?search=${searchQuery}`, {
     method: "GET",
@@ -13,6 +14,7 @@ export async function GetAllNotes(token, searchQuery) {
   return json;
 }
 
+// Tokeni, not başlığını ve not içeriğini alıp not oluşturan fonksiyonu yazıyoruz.
 export async function CreateNote(token, title, body) {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/note`, {
     method: "POST",
@@ -33,6 +35,7 @@ export async function CreateNote(token, title, body) {
   return json;
 }
 
+// Tokeni ve not id'sini alıp notu silen fonksiyonu yazıyoruz.
 export async function DeleteNote(token, id) {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/note/${id}`, {
     method: "DELETE",
@@ -48,6 +51,7 @@ export async function DeleteNote(token, id) {
   return json;
 }
 
+// Tokeni, not id'sini, not başlığını ve not içeriğini alıp notu güncelleyen fonksiyonu yazıyoruz.
 export async function UpdateNote(token, id, title, body) {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/note/${id}`, {
     method: "PUT",

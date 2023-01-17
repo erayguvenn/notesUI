@@ -1,6 +1,8 @@
 import { Navigate } from "react-router-dom";
 import useAuthStore from "../store/auth";
 
+// Bu component, çocuk componentlerini sadece giriş yapmamış kullanıcılar için gösterir.
+// Eğer kullanıcı giriş yapmışsa, çocuk componentler yerine "/" path'ine yönlendirir.
 function OnlyGuestRoute({ children }) {
   const loggedIn = useAuthStore((state) => state.loggedIn);
 

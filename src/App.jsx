@@ -15,8 +15,10 @@ import bgImage from "./assets/bg.jpg";
 function App() {
   const authStore = useAuthStore();
 
+  // Sayfa ilk yüklendiğinde eğer daha önce kaydedilmiş bir token varsa
+  // bu token'i kontrol edip eğer geçerliyse kullanıcıyı giriş yapmış varsayıyoruz.
   useEffect(() => {
-    async function getInıtialAuth() {
+    async function getInitialAuth() {
       try {
         const token = localStorage.getItem("token");
 
@@ -30,12 +32,17 @@ function App() {
         authStore.setLoggedIn(true);
         authStore.setToken(token);
       } catch (err) {
+        authStore.setLoggedIn(false);
         console.error(err);
       }
     }
 
-    getInıtialAuth();
+    getInitialAuth();
   }, []);
+
+  // Rotaları burada tanımlıyoruz.
+  // Rotaları sadece giriş yapmış kullanıcıların görebileceği ya da
+  // sadece giriş yapmamış kullanıcıların görebileceği şekilde ayarlıyoruz.
   return (
     <div className="font-inter h-screen relative overflow-hidden text-white flex">
       <img

@@ -5,6 +5,11 @@ function Header() {
   const logout = useAuthStore((state) => state.logout);
   const user = useAuthStore((state) => state.user);
 
+  // Kullanııcının yerel saatine göre hoşgeldin mesajı oluşturuyoruz.
+  // Eğer saat 0 ile 6 arasında ise "İyi geceler" mesajı gösteriyoruz.
+  // Eğer saat 6 ile 12 arasında ise "Günaydın" mesajı gösteriyoruz.
+  // Eğer saat 12 ile 18 arasında ise "İyi günler" mesajı gösteriyoruz.
+  // Eğer saat 18 ile 24 arasında ise "İyi akşamlar" mesajı gösteriyoruz.
   const welcomeMessage = useMemo(() => {
     const date = new Date();
 

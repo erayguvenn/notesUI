@@ -5,6 +5,7 @@ import { UpdateNote } from "../services/note";
 import { toast } from "react-hot-toast";
 import useAuthStore from "../store/auth";
 
+// Bu component; başlığı, içeriği, id'si, güncellenebilir olup olmadığı gibi bilgileri alunan bir notu gösterir.
 function NoteView({
   noteTitle,
   noteBody,
@@ -18,24 +19,30 @@ function NoteView({
   const [isEditing, setIsEditing] = useState(false);
   const token = useAuthStore((store) => store.token);
 
+  // Bu fonksiyon, notun başlığunu günceller.
   const onChangeTitle = (e) => {
     if (!editable) return;
 
     setTitle(e);
   };
 
+  // Bu fonksiyon, notun içeriğini günceller.
   const onChangeBody = (e) => {
     if (!editable) return;
 
     setBody(e);
   };
 
+  // Bu fonksiyon, notun edit moduna geçmesini sağlar.
   const onClickEdit = (e) => {
     if (!editable) return;
 
     setIsEditing((isEditing) => !isEditing);
   };
 
+  // Bu fonksiyon, notun güncellenmesini sağlar.
+  // Eğer güncelleme başarılı olursa, onUpdate fonksiyonu çalıştırılır ve ana component'i bilgilendirir.
+  // Eğer güncelleme başarısız olursa, kullanıcıya toast mesajı gösterilir.
   const onClickUpdate = async (e) => {
     if (!editable) return;
 
@@ -59,6 +66,7 @@ function NoteView({
     );
   };
 
+  // Bu fonksiyon, notun başlığı ve içeriği değişmişse ve not güncellenebilir ise güncelleme butonunu gösterir.
   const shouldShowUpdate =
     editable && (title !== noteTitle || body !== noteBody);
 

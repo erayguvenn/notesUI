@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Register } from "../services/auth";
 
@@ -10,14 +11,31 @@ function RegisterPage() {
 
   const navigate = useNavigate();
 
+  // Form submit edildiğinde kayıt servisini çağırıyoruz.
+  // Eğer kayıt başarılı olursa kullanıcıyı login sayfasına yönlendiriyoruz.
+  // Eğer kayıt başarısız olursa hata mesajını konsola yazdırıyoruz.
   async function onSubmit(e) {
     e.preventDefault();
-    try {
-      const response = await Register(name, surname, email, password);
-      navigate("/login");
-    } catch (err) {
-      console.error(err);
-    }
+
+    // Kayıt işlemi sırasında kullanıcıya bir loading mesajı gösteriyoruz.
+    // Kayıt işlemi başarılı olursa kullanıcıya bir success mesajı gösteriyoruz.
+    // Kayıt işlemi başarısız olursa kullanıcıya bir error mesajı gösteriyoruz.
+    toast.promise(
+      new Promise(async (res, rej) => {
+        try {
+          const response = await Register(name, surname, email, password);
+          res(response);
+          navigate("/login");
+        } catch (err) {
+          rej(err.message);
+        }
+      }),
+      {
+        loading: "Kayıt olunuyor...",
+        success: "Kayıt başarılı!",
+        error: (e) => "Kayıt başarısız, " + e,
+      }
+    );
   }
 
   return (

@@ -1,3 +1,4 @@
+// Tokeni alıp kullanıcı bilgilerini çeken fonksiyonu yazıyoruz.
 export async function GetUser(token) {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/user/`, {
     method: "GET",

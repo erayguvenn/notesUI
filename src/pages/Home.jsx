@@ -13,10 +13,12 @@ import {
 import produce from "immer";
 import NoteView from "../components/NoteView";
 
+// Bu fonksiyon, sayıları 2 basamaklı hale getirir.
 function zeroPad(str) {
   return String(str).length < 2 ? "0" + str : String(str);
 }
 
+// Bu fonksiyon, tarihleri istediğimiz formatta göstermek için kullanılır.
 function parseDate(dateStr) {
   const date = new Date(dateStr);
 
@@ -41,6 +43,7 @@ function HomePage() {
   const [createNoteBody, setCreateNoteBody] = useState("");
   const [createNoteTitle, setCreateNoteTitle] = useState("");
 
+  // Bu effect, sayfa açıldığında ya da arama terimi değiştiğinde notları getirir.
   useEffect(() => {
     async function getNotes() {
       try {
@@ -54,6 +57,9 @@ function HomePage() {
     getNotes();
   }, [searchQuery]);
 
+  // Bu fonksiyon, herhangi bir notun silme butonuna tıklandığında çalışır.
+  // Notu, notlar listesinden kaldırır ve ardından sunucudan siler.
+  // Sunucu cevabı beklenmeden notlar listesinden kaldırıldığı için, kullanıcıya daha iyi bir deneyim sağlar.
   const onClickDelete = async (e, noteId) => {
     e.stopPropagation();
 
@@ -63,20 +69,26 @@ function HomePage() {
     } catch (err) {}
   };
 
+  // Bu fonksiyon, yeni not oluşturma kutusu kapatıldığında çalışır.
+  // Yeni not oluşturma kutusunun içeriğini temizler.
   const onCloseCreateNote = () => {
     setIsCreatingNote(false);
     setCreateNoteTitle("");
     setCreateNoteBody("");
   };
 
+  // Bu fonksiyon, yeni not oluşturma kutusunda oluştur butonuna tıklandığında çalışır.
   const onCreateNote = () => {
     let title = createNoteTitle;
     const body = createNoteBody;
 
+    // Eğer başlık girilmemişse, başlığı "Başlıksız" olarak ayarlar.
     if (title.trim() == "") title = "Başlıksız";
 
+    // Bu geçici bir id'dir. Sunucudan notun id'si döndükten sonra, bu id ile notu günceller.
     let temporaryId = uuidv4();
 
+    // Notu, notlar listesine ekler.
     setNotes((notes) => [
       {
         temporaryId,
@@ -87,13 +99,16 @@ function HomePage() {
       ...notes,
     ]);
 
+    // Sunucuya notu gönderir.
     CreateNote(token, title, body).then((newNote) =>
       setNotes(
         produce((oldNotes) => {
+          // Sunucudan dönen notu, geçici id'si ile notlar listesindeki notu bulur.
           let noteToUpdate = oldNotes.find(
             (note) => note.temporaryId == temporaryId
           );
 
+          // Eğer not bulunursa, notu günceller.
           if (noteToUpdate) {
             Object.entries(newNote).forEach(
               ([key, value]) => (noteToUpdate[key] = value)
@@ -104,10 +119,9 @@ function HomePage() {
         })
       )
     );
-    setCreateNoteTitle("");
-    setCreateNoteBody("");
 
-    setIsCreatingNote(false);
+    // Yeni not oluşturma kutusunu kapatır.
+    onCloseCreateNote();
   };
 
   return (
@@ -209,9 +223,12 @@ function HomePage() {
                 setSelectedNote(null);
                 setNotes(
                   produce((oldNotes) => {
+                    // Seçili notu, notlar listesindeki notlardan bulur.
                     let noteToUpdate = oldNotes.find(
                       (note) => note.id == selectedNote.id
                     );
+
+                    // Eğer not bulunursa, notu günceller.
                     if (noteToUpdate) {
                       noteToUpdate.title = title;
                       noteToUpdate.body = body;
